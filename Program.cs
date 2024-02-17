@@ -1,4 +1,7 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
+using System.Globalization;
+using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -23,7 +26,9 @@ internal class Program
 		decimal[] montoPagaCliente = new decimal[10];
 		decimal[] vuelto = new decimal[10];
 
-
+		InicializarVectores(numeroPago, fecha, hora, cedula, nombre, apellido1, apellido2,
+							 numeroCaja, tipoServicio, numeroFactura, montoPagar, montoComision,
+							 montoDeducido, montoPagaCliente, vuelto);
 
 		Limpiar();
 		int opcion;
@@ -54,7 +59,9 @@ internal class Program
 						
 						break;
 					case 4:
-						//ModificarPagos();
+						ModificarPagos(numeroPago, fecha, hora, cedula, nombre, apellido1, apellido2,
+							 numeroCaja, tipoServicio, numeroFactura, montoPagar, montoComision,
+							 montoDeducido, montoPagaCliente, vuelto);
 						break;
 					case 5:
 						//EliminarPagos();
@@ -241,7 +248,7 @@ internal class Program
 					Console.Write("Digite el nombre del cliente :");
 					string entrada = Console.ReadLine();
 
-					if (entrada != "")
+					if (EsCampoValido(entrada))
 					{
 						nombre[indice] = entrada;
 						break;
@@ -257,7 +264,7 @@ internal class Program
 					Console.Write("Digite el apellido 1 del cliente :");
 					string entrada = Console.ReadLine();
 
-					if (entrada != "")
+					if (EsCampoValido(entrada))
 					{
 						apellido1[indice] = entrada;
 						break;
@@ -273,7 +280,7 @@ internal class Program
 					Console.Write("Digite el apellido 2 del cliente :");
 					string entrada = Console.ReadLine();
 
-					if (entrada != "")
+					if (EsCampoValido(entrada))
 					{
 						apellido2[indice] = entrada;
 						break;
@@ -310,18 +317,18 @@ internal class Program
 				montoPagar[indice] = random.Next(5000, 100000);
 
 				float comision = 0;
-				switch(tipoServicio[indice])
+				switch (tipoServicio[indice])
 				{
-					case 1:
-						comision = 0.04f;
+					case 1: // Recibo de electricidad
+						comision = 0.04f; // 4%
 						break;
 
-					case 2:
-						comision = 0.55f;
+					case 2: // Recibo telefónico
+						comision = 0.055f; // 5.5%
 						break;
 
-					case 3:
-						comision = 0.65f;
+					case 3: // Pago recibo de agua
+						comision = 0.065f; // 6.5%
 						break;
 
 				}
@@ -353,7 +360,7 @@ internal class Program
 
 				MotrarInfo(numeroPago, fecha, hora, cedula, nombre, apellido1, apellido2,
 								 numeroCaja, tipoServicio, numeroFactura, montoPagar, montoComision,
-								 montoDeducido, montoPagaCliente, vuelto,indice, "Ingreso de datos");
+								 montoDeducido, montoPagaCliente, vuelto,indice, "Ingreso de datos",1);
 
 
 				do
@@ -375,7 +382,12 @@ internal class Program
 					}
 					else
 					{
+						Limpiar();
 						Console.WriteLine("Entrada inválida. Por favor, ingrese 'S' o 'N'.");
+						Console.WriteLine("");
+						MotrarInfo(numeroPago, fecha, hora, cedula, nombre, apellido1, apellido2,
+								 numeroCaja, tipoServicio, numeroFactura, montoPagar, montoComision,
+								 montoDeducido, montoPagaCliente, vuelto, indice, "Ingreso de datos", 1);
 					}
 
 				} while (true);
@@ -402,30 +414,60 @@ internal class Program
 									string[] apellido2, int[] numeroCaja, int[] tipoServicio,
 									string[] numeroFactura, decimal[] montoPagar,
 									decimal[] montoComision, decimal[] montoDeducido,
-									decimal[] montoPagaCliente, decimal[] vuelto, int indice,string opcionmenu)
+									decimal[] montoPagaCliente, decimal[] vuelto, int indice,string opcionmenunombre, int opcion)
 	{
-		Limpiar();
-		Console.WriteLine("");
-		Console.WriteLine("Sistema de Pago de Servicios Publicos");
-		Console.WriteLine(opcionmenu);
-		Console.WriteLine("");
-		Console.WriteLine($"Numero de pago:		{numeroPago[indice],-10}");
-		Console.WriteLine("");
-		Console.WriteLine($"Fecha:             {fecha[indice],-9}          Hora:             {hora[indice],-10}");
-		Console.WriteLine("");
-		Console.WriteLine($"Cedula:             {cedula[indice],-10}          Nombre:           {nombre[indice],-10}");
-		Console.WriteLine("");
-		Console.WriteLine($"Apellido 1:         {apellido1[indice],-10}          Apellido 2:       {apellido2[indice],-10}");
-		Console.WriteLine("");
-		Console.WriteLine($"Tipo de Servicio    {tipoServicio[indice],-5}  [1-Electricidad 2-Telefono 3-Agua]");
-        Console.WriteLine("");
-		Console.WriteLine($"Numero de factura:  {numeroFactura[indice],10}          Monto Pagar:      {montoPagar[indice],10}");
-        Console.WriteLine("");
-		Console.WriteLine($"Comision autorizada:{montoComision[indice],10}          Paga con:         {montoPagaCliente[indice],10}");
-		Console.WriteLine("");
-		Console.WriteLine($"Monto deducido:     {montoDeducido[indice],10}          Vuelto:           {vuelto[indice],10}");
-		Console.WriteLine("");
-		Console.WriteLine("");
+		if(opcion== 1)
+		{
+			Limpiar();
+			Console.WriteLine("");
+			Console.WriteLine("Sistema de Pago de Servicios Publicos");
+			Console.WriteLine(opcionmenunombre);
+			Console.WriteLine("");
+			Console.WriteLine($"Numero de pago:		{numeroPago[indice],-10}");
+			Console.WriteLine("");
+			Console.WriteLine($"Fecha:             {fecha[indice],-9}          Hora:             {hora[indice],-10}");
+			Console.WriteLine("");
+			Console.WriteLine($"Cedula:             {cedula[indice],-10}          Nombre:           {nombre[indice],-10}");
+			Console.WriteLine("");
+			Console.WriteLine($"Apellido 1:         {apellido1[indice],-10}          Apellido 2:       {apellido2[indice],-10}");
+			Console.WriteLine("");
+			Console.WriteLine($"Tipo de Servicio    {tipoServicio[indice],-5}  [1-Electricidad 2-Telefono 3-Agua]");
+			Console.WriteLine("");
+			Console.WriteLine($"Numero de factura:  {numeroFactura[indice],10}          Monto Pagar:      {montoPagar[indice],10}");
+			Console.WriteLine("");
+			Console.WriteLine($"Comision autorizada:{montoComision[indice],10}          Paga con:         {montoPagaCliente[indice],10}");
+			Console.WriteLine("");
+			Console.WriteLine($"Monto deducido:     {montoDeducido[indice],10}          Vuelto:           {vuelto[indice],10}");
+			Console.WriteLine("");
+			Console.WriteLine("");
+		}
+		else if(opcion == 2)
+		{
+			Limpiar();
+			Console.WriteLine("");
+			Console.WriteLine("Sistema de Pago de Servicios Publicos");
+			Console.WriteLine(opcionmenunombre);
+			Console.WriteLine("");
+			Console.WriteLine($"Numero de pago:		{numeroPago[indice],-10}");
+			Console.WriteLine("");
+			Console.WriteLine($"A-Fecha:             {fecha[indice],-9}          B-Hora:             {hora[indice],-10}");
+			Console.WriteLine("");
+			Console.WriteLine($"C-Cedula:             {cedula[indice],-10}          D-Nombre:           {nombre[indice],-10}");
+			Console.WriteLine("");
+			Console.WriteLine($"E-Apellido 1:         {apellido1[indice],-10}          F-Apellido 2:       {apellido2[indice],-10}");
+			Console.WriteLine("");
+			Console.WriteLine($"G-Tipo de Servicio    {tipoServicio[indice],-5}  [1-Electricidad 2-Telefono 3-Agua]");
+			Console.WriteLine("");
+			Console.WriteLine($"H-Numero de factura:  {numeroFactura[indice],10}          Monto Pagar:      {montoPagar[indice],10}");
+			Console.WriteLine("");
+			Console.WriteLine($"Comision autorizada:{montoComision[indice],10}          I-Paga con:         {montoPagaCliente[indice],10}");
+			Console.WriteLine("");
+			Console.WriteLine($"Monto deducido:     {montoDeducido[indice],10}          Vuelto:           {vuelto[indice],10}");
+			Console.WriteLine("");
+			Console.WriteLine("");
+			Console.WriteLine("S-Desea Continuar S/N ?");
+		}
+
 
 	}
 
@@ -443,7 +485,19 @@ internal class Program
         Console.WriteLine("");
 		Console.WriteLine("");
 		Console.Write("Numero de Pago: ");
-		int entrada =  Convert.ToInt16(Console.ReadLine());
+		int entrada;
+		while (!ValidarEsNumero(out entrada))
+		{
+			Limpiar();
+			Console.WriteLine("Por favor ingresa un número.");
+			Console.WriteLine("");
+			Console.WriteLine("Sistema de Pago de Servicios Publicos");
+			Console.WriteLine("Consulta de datos");
+			Console.WriteLine("");
+			Console.WriteLine("");
+			Console.Write("Numero de Pago: ");
+		}
+		bool encontrado = false;
 		Console.WriteLine("");
 		Console.WriteLine("");
 		Console.WriteLine("");
@@ -452,6 +506,7 @@ internal class Program
         {
 			if (numeroPago[i] == entrada )
 			{
+				encontrado = true;
                 Console.WriteLine("Dato Encontrado Posición Vector " + i);
 				Console.WriteLine("");
 				Console.WriteLine("");
@@ -461,13 +516,13 @@ internal class Program
 				Console.ReadKey();
 				MotrarInfo(numeroPago, fecha, hora, cedula, nombre, apellido1, apellido2,
 				 numeroCaja, tipoServicio, numeroFactura, montoPagar, montoComision,
-				 montoDeducido, montoPagaCliente, vuelto, i, "Consulta de datos");
+				 montoDeducido, montoPagaCliente, vuelto, i, "Consulta de datos",1);
                 Console.WriteLine("");
                 Console.WriteLine("Presione cualquier tecla");
 				Console.ReadKey();
 				Limpiar();
 			}
-            else if(i == numeroPago.Length)
+            else if(i == numeroPago.Length - 1 && encontrado == false)
 			{
 				Limpiar();
 				Console.WriteLine("Pago no se encuentra Registrado");
@@ -480,8 +535,439 @@ internal class Program
 
 
 
+	private static void ModificarPagos(int[] numeroPago, string[] fecha, string[] hora,
+									string[] cedula, string[] nombre, string[] apellido1,
+									string[] apellido2, int[] numeroCaja, int[] tipoServicio,
+									string[] numeroFactura, decimal[] montoPagar,
+									decimal[] montoComision, decimal[] montoDeducido,
+									decimal[] montoPagaCliente, decimal[] vuelto)
+	{
+		Limpiar();
+		Console.WriteLine("");
+		Console.WriteLine("Sistema de Pago de Servicios Publicos");
+		Console.WriteLine("Modicar Pagos");
+		Console.WriteLine("");
+		Console.WriteLine("");
+		Console.Write("Numero de Pago: ");
+		int entrada;
+		while(!ValidarEsNumero(out entrada))
+		{
+			Limpiar();
+			Console.WriteLine("Por favor ingresa un número.");
+			Console.WriteLine("");
+			Console.WriteLine("Sistema de Pago de Servicios Publicos");
+			Console.WriteLine("Modicar Pagos");
+			Console.WriteLine("");
+			Console.WriteLine("");
+			Console.Write("Numero de Pago: ");
+		}
+		Console.WriteLine("");
+		Console.WriteLine("");
+		Console.WriteLine("");
+
+		bool encontrado = false;
+
+		for (int i = 0; i < numeroPago.Length; i++)
+		{
+			if (numeroPago[i] == entrada)
+			{
+				
+				Console.WriteLine("Dato Encontrado Posición Vector " + i);
+				Console.WriteLine("");
+				Console.WriteLine("");
+				Console.WriteLine("");
+				Console.WriteLine("");
+				Console.WriteLine("Presione cualquier tecla para ver registro...");
+				Console.ReadKey();
+
+				bool YoN = true;
+
+				do
+				
+				{
+					MotrarInfo(numeroPago, fecha, hora, cedula, nombre, apellido1, apellido2,
+					numeroCaja, tipoServicio, numeroFactura, montoPagar, montoComision,
+					montoDeducido, montoPagaCliente, vuelto, i, "Modicar Pagos", 2);
+					Console.WriteLine("");
+					Console.Write("Seleccione opcion a modificar: ");
+					char entrada2;
+
+					while (!ValidarCaracter(out entrada2))
+					{
+						Limpiar();
+						Console.WriteLine("Opción no válida. Por favor, ingrese una sola letra.");
+						Console.WriteLine("");
+						MotrarInfo(numeroPago, fecha, hora, cedula, nombre, apellido1, apellido2,
+						numeroCaja, tipoServicio, numeroFactura, montoPagar, montoComision,
+						montoDeducido, montoPagaCliente, vuelto, i, "Modicar Pagos", 2);
+						Console.WriteLine("");
+						Console.Write("Seleccione opción a modificar: ");
+					}
+
+					switch (entrada2)
+					{
+						case 'A':
+							Limpiar();
+							string fechaEntrada;
+							bool fechaValida = false;
+
+							while (!fechaValida)
+							{
+								Console.WriteLine("");
+								Console.WriteLine("Fecha");
+                                Console.WriteLine("");
+                                Console.Write("Digite la nueva fecha (dd/MM/yyyy): ");
+								fechaEntrada = Console.ReadLine();
+
+								// Verifica si la entrada es una fecha válida
+								fechaValida = EsFechaValida(fechaEntrada);
+
+								if (fechaValida)
+								{
+									fecha[i] = fechaEntrada;
+                                    Console.WriteLine("");
+                                    Console.WriteLine("La fecha fue modificada.");
+								}
+								else
+								{
+                                    Console.WriteLine("");
+                                    Console.WriteLine("La fecha no es válida. Asegúrese de usar el formato dd/MM/yyyy.");
+								}
+							
+							}
+
+							break;
+
+						case 'B':
+							Limpiar();
+							string horaEntrada;
+							bool horaValida = false;
+
+							while(!horaValida)
+							{
+								Console.WriteLine("");
+								Console.WriteLine("Hora");
+								Console.WriteLine("");
+                                Console.Write("Digite la nueva hora hh:mm tt( a. m. | p. m. ): ");
+								horaEntrada = Console.ReadLine();
+
+								horaValida = EsHoraValida(horaEntrada);
+
+								if(horaValida)
+								{
+									hora[i] = horaEntrada;
+									Console.WriteLine("");
+									Console.WriteLine("La hora fue modificada");
+								}
+								else
+								{
+									Console.WriteLine("");
+									Console.WriteLine("La hora no es válida. Asegúrese de usar el formato (hh:mm tt).");
+								}
+                            }
+
+							
+							break;
+
+						case 'C':
+							do
+							{
+								Limpiar();
+								Console.WriteLine("");
+								Console.WriteLine("Cedula");
+								Console.WriteLine("");
+								Console.Write("Digite la cedula del cliente :");
+								string entradaCedula = Console.ReadLine();
+
+								if (ContieneSoloEspaciosOLetras(entradaCedula))
+								{
+									cedula[i] = entradaCedula;
+									break;
+								}
 
 
+							} while (true);
+
+							
+							break;
+
+						case 'D':
+							do
+							{
+								Limpiar();
+								Console.WriteLine("");
+								Console.WriteLine("Nombre");
+								Console.WriteLine("");
+								Console.Write("Digite el nombre del cliente :");
+								string entradaN = Console.ReadLine();
+
+								if (EsCampoValido(entradaN))
+								{
+									nombre[i] = entradaN;
+									break;
+								}
+
+
+							} while (true);
+							
+							break;
+
+						case 'E':
+							do
+							{
+								Limpiar();
+								Console.WriteLine("");
+								Console.WriteLine("Apellido 1");
+								Console.WriteLine("");
+								Console.Write("Digite el apellido 1 del cliente :");
+								string entradaN = Console.ReadLine();
+
+								if (EsCampoValido(entradaN))
+								{
+									apellido1[i] = entradaN;
+									break;
+								}
+
+
+							} while (true);
+							break;
+
+						case 'F':
+							do
+							{
+								Limpiar();
+								Console.WriteLine("");
+								Console.WriteLine("Apellido 2");
+								Console.WriteLine("");
+								Console.Write("Digite el apellido 2 del cliente :");
+								string entradaN = Console.ReadLine();
+
+								if (EsCampoValido(entradaN))
+								{
+									apellido2[i] = entradaN;
+									break;
+								}
+
+
+							} while (true);
+							break;
+
+						case 'G':
+							do
+							{
+								Limpiar();
+								Console.WriteLine("");
+								Console.WriteLine("Tipo de servicio");
+								Console.WriteLine("");
+								Console.WriteLine("Digite el tipo de servicio.");
+								Console.WriteLine("");
+								Console.WriteLine("[1-Electricidad 2-Telefono 3-Agua]");
+								Console.WriteLine("");
+								Console.Write("Opción :");
+								string entradaT = Console.ReadLine();
+
+								if (Contiene123(entradaT))
+								{
+									tipoServicio[i] = Convert.ToInt16(entradaT);
+
+									float comision = 0;
+									switch (tipoServicio[i])
+									{
+										case 1: // Recibo de electricidad
+											comision = 0.04f; // 4%
+											break;
+
+										case 2: // Recibo telefónico
+											comision = 0.055f; // 5.5%
+											break;
+
+										case 3: // Pago recibo de agua
+											comision = 0.065f; // 6.5%
+											break;
+
+									}
+
+									montoComision[i] = montoPagar[i] * Convert.ToDecimal(comision);
+
+									montoDeducido[i] = montoPagar[i] - montoComision[i];
+
+									vuelto[i] = montoPagaCliente[i] - montoDeducido[i];
+
+									break;
+								}
+
+
+
+							} while (true);
+
+						break;
+
+						case 'H':
+							do
+							{
+								Limpiar();
+								Console.WriteLine("");
+								Console.WriteLine("Numero de factura");
+								Console.WriteLine("");
+								Console.Write("Digite el nuevo numero de factura :");
+								string entradaNum = Console.ReadLine();
+
+								if (ContieneSoloEspaciosOLetras(entradaNum))
+								{
+									numeroFactura[i] = entradaNum;
+									break;
+								}
+
+
+							} while (true);
+
+						break;
+
+						case 'I':
+							do
+							{
+								Limpiar();
+								Console.WriteLine("");
+								Console.WriteLine("Pago con");
+								Console.WriteLine("");
+								Console.WriteLine("Monto a pagar: " + montoDeducido[i]);
+								Console.WriteLine("");
+								Console.Write("Digite el monto de pago :");
+								string entradaP = Console.ReadLine();
+
+								if (ContieneSoloNumeros(entradaP) && Convert.ToDecimal(entradaP) >= montoDeducido[i])
+								{
+									montoPagaCliente[i] = Convert.ToDecimal(entradaP);
+									break;
+								}
+
+
+							} while (true);
+
+
+							vuelto[i] = montoPagaCliente[i] - montoDeducido[i];
+
+							break;
+
+						case 'S':
+							
+							do
+							{
+								Limpiar();
+								Console.Write("Desea Continuar S/N ?: ");
+								string entradaYoN = Console.ReadLine();
+
+								if (entradaYoN == "S" || entradaYoN == "s")
+								{
+									YoN = true;
+									break;
+								}
+								else if (entradaYoN == "N" || entradaYoN == "n")
+								{
+									YoN = false;
+									Limpiar();
+									break;
+
+								}
+								else
+								{
+									Limpiar();
+									Console.WriteLine("Entrada inválida. Por favor, ingrese 'S' o 'N'.");
+									Console.WriteLine("");
+									
+								}
+
+							} while (true);
+							break;
+
+						default:
+							Limpiar();
+							Console.WriteLine("Opción no valida");
+							break;
+					}
+
+					if (!YoN)
+					{
+						break;
+					}
+				} while (true);
+
+				encontrado = true;
+
+				
+			}
+			else if (i == numeroPago.Length - 1 && encontrado == false )
+			{
+				Limpiar();
+				Console.WriteLine("Pago no se encuentra Registrado");
+			}
+
+		}
+
+	}
+
+	private static bool ValidarEsNumero(out int resultado)
+	{
+		string dato = Console.ReadLine();
+		return int.TryParse(dato, out resultado);
+	}
+
+	private static bool ValidarCaracter(out char result)
+	{
+		string input = Console.ReadLine().ToUpper();
+		if (input.Length == 1 && Char.IsLetter(input[0]))
+		{
+			result = input[0];
+			return true;
+		}
+		result = '\0'; // Carácter nulo si la entrada no es válida
+		return false;
+	}
+
+	private static bool EsFechaValida(string fecha)
+	{
+		DateTime fechaConvertida;
+		// Define el formato exacto esperado para la fecha
+		string formato = "dd/MM/yyyy";
+
+		// Intenta convertir el string de entrada al formato de fecha especificado
+		// CultureInfo.InvariantCulture se usa para evitar problemas con la configuración regional
+		bool esValido = DateTime.TryParseExact(fecha, formato, CultureInfo.InvariantCulture, DateTimeStyles.None, out fechaConvertida);
+
+		return esValido;
+	}
+
+	private static bool EsHoraValida(string hora)
+	{
+		DateTime horaConvertida;
+		// Define el formato exacto esperado para la hora
+		string formato = "hh:mm tt";
+
+		// Intenta convertir el string de entrada al formato de hora especificado
+		// CultureInfo.InvariantCulture se usa para evitar problemas con la configuración regional,
+		// especialmente para el indicador AM/PM.
+		bool esValido = DateTime.TryParseExact(hora, formato, new CultureInfo("es-ES"), DateTimeStyles.None, out horaConvertida);
+
+		return esValido;
+	}
+
+	private static bool EsCampoValido(string campo)
+	{
+		// Verifica que el campo no esté vacío o solo contenga espacios
+		if (string.IsNullOrWhiteSpace(campo))
+		{
+			return false;
+		}
+
+		// Utiliza una expresión regular para buscar espacios continuos
+		// \s representa un carácter de espacio y {2,} indica dos o más ocurrencias
+		if (Regex.IsMatch(campo, @"\s{2,}"))
+		{
+			return false;
+		}
+
+		return true;
+	}
 
 	private static int EncontrarCampoVacio(int[] vector)
 	{
