@@ -70,7 +70,9 @@ internal class Program
 							 montoDeducido, montoPagaCliente, vuelto);
 						break;
 					case 6:
-						SubmenuReportes();
+						SubmenuReportes(numeroPago, fecha, hora, cedula, nombre, apellido1, apellido2,
+							 numeroCaja, tipoServicio, numeroFactura, montoPagar, montoComision,
+							 montoDeducido, montoPagaCliente, vuelto);
 						break;
 					case 7:
 						Console.WriteLine("");
@@ -110,7 +112,12 @@ internal class Program
 		Console.WriteLine("7. Salir");
 	}
 
-	private static void SubmenuReportes()
+	private static void SubmenuReportes(int[] numeroPago, string[] fecha, string[] hora,
+									string[] cedula, string[] nombre, string[] apellido1,
+									string[] apellido2, int[] numeroCaja, int[] tipoServicio,
+									string[] numeroFactura, decimal[] montoPagar,
+									decimal[] montoComision, decimal[] montoDeducido,
+									decimal[] montoPagaCliente, decimal[] vuelto)
 	{
 		Limpiar();
 
@@ -126,16 +133,16 @@ internal class Program
 				switch (opcionReporte)
 				{
 					case 1:
-						//VerTodosLosPagos();
+						VerTodosLosPagos(numeroPago, fecha, hora, cedula, nombre, apellido1, apellido2, montoPagar,tipoServicio,numeroCaja);
 						break;
 					case 2:
-						//VerPagosPorTipoServicio();
+						VerPagosPorTipoServicio(numeroPago, fecha, hora, cedula, nombre, apellido1, apellido2, montoPagar, tipoServicio,numeroCaja);
 						break;
 					case 3:
-						//VerPagosPorCodigoCaja();
+						VerPagosPorCodigoCaja(numeroPago, fecha, hora, cedula, nombre, apellido1, apellido2, montoPagar, tipoServicio, numeroCaja);
 						break;
 					case 4:
-						//VerDineroComisionadoPorServicios();
+						VerDineroComisionadoPorServicios(numeroPago,tipoServicio,montoComision);
 						break;
 					case 5:
 						Console.WriteLine("");
@@ -367,12 +374,12 @@ internal class Program
 				{
 					Limpiar();
 					Console.WriteLine("");
-					Console.WriteLine("Monto a pagar: "+ montoDeducido[indice]);
+					Console.WriteLine("Monto a pagar: "+ montoPagar[indice]);
 					Console.WriteLine("");
 					Console.Write("Digite el monto de pago :");
 					string entrada = Console.ReadLine();
 
-					if (ContieneSoloNumeros(entrada) && Convert.ToDecimal(entrada) >= montoDeducido[indice] )
+					if (ContieneSoloNumeros(entrada) && Convert.ToDecimal(entrada) >= montoPagar[indice] )
 					{
 						montoPagaCliente[indice] = Convert.ToDecimal(entrada);
 						break;
@@ -382,7 +389,7 @@ internal class Program
 				} while (true);
 
 
-				vuelto[indice] = montoPagaCliente[indice] - montoDeducido[indice];
+				vuelto[indice] = montoPagaCliente[indice] - montoPagar[indice];
 
 				MotrarInfo(numeroPago, fecha, hora, cedula, nombre, apellido1, apellido2,
 								 numeroCaja, tipoServicio, numeroFactura, montoPagar, montoComision,
@@ -817,7 +824,7 @@ internal class Program
 
 									montoDeducido[i] = montoPagar[i] - montoComision[i];
 
-									vuelto[i] = montoPagaCliente[i] - montoDeducido[i];
+									vuelto[i] = montoPagaCliente[i] - montoPagar[i];
 
 									break;
 								}
@@ -856,12 +863,12 @@ internal class Program
 								Console.WriteLine("");
 								Console.WriteLine("Pago con");
 								Console.WriteLine("");
-								Console.WriteLine("Monto a pagar: " + montoDeducido[i]);
+								Console.WriteLine("Monto a pagar: " + montoPagar[i]);
 								Console.WriteLine("");
 								Console.Write("Digite el monto de pago :");
 								string entradaP = Console.ReadLine();
 
-								if (ContieneSoloNumeros(entradaP) && Convert.ToDecimal(entradaP) >= montoDeducido[i])
+								if (ContieneSoloNumeros(entradaP) && Convert.ToDecimal(entradaP) >= montoPagar[i])
 								{
 									montoPagaCliente[i] = Convert.ToDecimal(entradaP);
 									break;
@@ -871,7 +878,7 @@ internal class Program
 							} while (true);
 
 
-							vuelto[i] = montoPagaCliente[i] - montoDeducido[i];
+							vuelto[i] = montoPagaCliente[i] - montoPagar[i];
 
 							break;
 
@@ -1035,6 +1042,294 @@ internal class Program
 		}
 
 	}
+
+
+
+	private static void VerTodosLosPagos(int[] numeroPago, string[] fecha, string[] hora,
+									string[] cedula, string[] nombre, string[] apellido1,
+									string[] apellido2, decimal[] montoPagar, int[] tipoServicio, int[] numeroCaja)
+	{
+		Limpiar();
+		Console.WriteLine("Sistema Pago de Servicios Públicos");
+		Console.WriteLine("Reporte Todos los Pagos");
+
+        Console.WriteLine("");
+		Console.WriteLine("");
+		Mostrarinfosubmenu(numeroPago, fecha, hora, cedula, nombre, apellido1, apellido2, montoPagar, tipoServicio,numeroCaja, 1, 0,0);
+		
+        // Pie de página
+        Console.WriteLine("Presione cualquier Tecla para continuar");
+		Console.ReadKey();
+		Limpiar();
+	}
+	private static void VerPagosPorTipoServicio(int[] numeroPago, string[] fecha, string[] hora,
+									string[] cedula, string[] nombre, string[] apellido1,
+									string[] apellido2, decimal[] montoPagar, int[] tipoServicio, int[] numeroCaja)
+	{
+
+		int opcionSeleccionada = 0;
+		do
+		{
+			Limpiar();
+			Console.WriteLine("Sistema Pago de Servicios Públicos");
+			Console.WriteLine("Reporte Todos los Pagos por Tipo de Servicio");
+			Console.WriteLine("");
+			Console.WriteLine("");
+			Console.WriteLine(new string('=', 80));
+			Console.WriteLine("Seleccione codigo de Servicio\t[1] Electricidad\t[2] Telefono\t[3] Agua\n");
+			Console.WriteLine(new string('=', 80));
+			Console.WriteLine("");
+			Console.WriteLine("");
+			Console.Write("Ingrese el código del servicio (1, 2, o 3): ");
+			string entrada = Console.ReadLine();
+
+			// Intentar convertir la entrada a un entero
+			if (int.TryParse(entrada, out opcionSeleccionada))
+			{
+				// Verificar si la opción está en el rango válido
+				if (opcionSeleccionada >= 1 && opcionSeleccionada <= 3)
+				{
+					Limpiar();
+					Console.WriteLine("Sistema Pago de Servicios Públicos");
+					Console.WriteLine("Reporte Todos los Pagos por Tipo de Servicio");
+					Console.WriteLine("");
+					Console.WriteLine("");
+					Mostrarinfosubmenu(numeroPago, fecha, hora, cedula, nombre, apellido1, apellido2, montoPagar, tipoServicio,numeroCaja, 2, opcionSeleccionada,0);
+					Console.WriteLine("Presione cualquier Tecla para continuar");
+					Console.ReadKey();
+					Limpiar();
+					break;
+				}
+				else
+				{
+					Limpiar();
+					Console.WriteLine("Opción no válida. Por favor, seleccione un número entre 1 y 3.");
+					
+				}
+			}
+			else
+			{
+				Limpiar();
+				Console.WriteLine("Entrada no válida. Por favor ingrese un número.");
+			}
+
+		} while (true);
+
+
+
+	}
+	private static void VerPagosPorCodigoCaja(int[] numeroPago, string[] fecha, string[] hora,
+									string[] cedula, string[] nombre, string[] apellido1,
+									string[] apellido2, decimal[] montoPagar, int[] tipoServicio, int[] numeroCaja)
+	{
+		int opcionSeleccionada = 0;
+		do
+		{
+			Limpiar();
+			Console.WriteLine("Sistema Pago de Servicios Públicos");
+			Console.WriteLine("Reporte Todos los Pagos por Codigo De Cajero");
+			Console.WriteLine("");
+			Console.WriteLine("");
+			Console.WriteLine(new string('=', 80));
+			Console.WriteLine("Seleccione codigo de Servicio\t[1] Caja#1\t[2] Caja#2\t[3] Caja#3\n");
+			Console.WriteLine(new string('=', 80));
+			Console.WriteLine("");
+			Console.WriteLine("");
+			Console.Write("Ingrese el código de caja (1, 2, o 3): ");
+			string entrada = Console.ReadLine();
+
+			// Intentar convertir la entrada a un entero
+			if (int.TryParse(entrada, out opcionSeleccionada))
+			{
+				// Verificar si la opción está en el rango válido
+				if (opcionSeleccionada >= 1 && opcionSeleccionada <= 3)
+				{
+					Limpiar();
+					Console.WriteLine("Sistema Pago de Servicios Públicos");
+					Console.WriteLine("Reporte Todos los Pagos por Codigo De Cajero");
+					Console.WriteLine("");
+					Console.WriteLine("");
+					Mostrarinfosubmenu(numeroPago, fecha, hora, cedula, nombre, apellido1, apellido2, montoPagar, tipoServicio, numeroCaja,3 , 0,opcionSeleccionada);
+					Console.WriteLine("Presione cualquier Tecla para continuar");
+					Console.ReadKey();
+					Limpiar();
+					break;
+				}
+				else
+				{
+					Limpiar();
+					Console.WriteLine("Opción no válida. Por favor, seleccione un número entre 1 y 3.");
+
+				}
+			}
+			else
+			{
+				Limpiar();
+				Console.WriteLine("Entrada no válida. Por favor ingrese un número.");
+			}
+
+		} while (true);
+	}
+	private static void VerDineroComisionadoPorServicios(int[] numeroPago, int[] tipoServicio, decimal[] montoComision)
+	{
+		Limpiar();
+		Console.WriteLine("Reporte Dinero Comisionado - Desgloce por Tipo de Servicio\n");
+        Console.WriteLine("");
+
+		Console.WriteLine(new string('=', 60)); // Línea de separación
+												// Encabezados de las columnas
+		Console.WriteLine("{0,-15} {1,-20} {2,-15}", "ITEM", "Cant. Transacciones", "Total Comisionado");
+		Console.WriteLine(new string('=', 60)); // Línea de separación
+
+		byte contadorE = 0;
+		byte contadorT = 0;
+		byte contadorA = 0;
+
+		decimal montototalE = 0;
+		decimal montototalT = 0;
+		decimal montototalA = 0;
+
+
+		for (int i = 0; i < numeroPago.Length; i++)
+        {
+            if(numeroPago[i] != -1)
+			{
+				switch(tipoServicio[i])
+				{
+					case 1:
+						contadorE++;
+						montototalE += montoComision[i];
+						break;
+
+					case 2:
+						contadorT++;
+						montototalT += montoComision[i];
+						break;
+
+					case 3:
+						contadorA++;
+						montototalA += montoComision[i];
+						break;
+				}
+			}
+        }
+
+
+        // Datos del reporte
+        Console.WriteLine("{0,-15} {1,-20} {2,-15}", "1-Electricidad", contadorE, montototalE);
+		Console.WriteLine("{0,-15} {1,-20} {2,-15}", "2-Telefono", contadorT, montototalT);
+		Console.WriteLine("{0,-15} {1,-20} {2,-15}", "3-Agua", contadorA, montototalA);
+
+		// Línea de separación
+		Console.WriteLine(new string('-', 60));
+
+		// Totales
+		Console.WriteLine("{0,-15} {1,-20} {2,-15}", "Total", contadorA + contadorE + contadorT, montototalA + montototalE + montototalT);
+
+		// Línea de separación
+		Console.WriteLine(new string('=', 60));
+
+		// Pie de página
+		Console.WriteLine("\nPulse cualquier tecla para regresar al submenu de reportes");
+		Console.ReadKey();
+		Limpiar();
+	}
+
+	private static void Mostrarinfosubmenu(int[] numeroPago, string[] fecha, string[] hora,
+									string[] cedula, string[] nombre, string[] apellido1,
+									string[] apellido2, decimal[] montoPagar, int[] tipoServicio, int[] numeroCaja, int modo, int tipo_s , int n_Caja)
+	{
+		switch(modo)
+		{
+			case 1:
+
+				Console.WriteLine("{0,-8} {1,-25} {2,-10} {3,-10} {4,-15} {5,-15} {6,-10}",
+			"# Pago", "Fecha/Hora Pago", "Cedula", "Nombre", "Apellido1", "Apellido2", "Monto Recibido");
+				Console.WriteLine(new string('=', 105)); // Línea de separación
+				byte contador = 0;
+				decimal montototal = 0;
+				// Datos
+				for (int i = 0; i < numeroPago.Length; i++)
+				{
+					if (numeroPago[i] != -1)
+					{
+						contador++;
+						Console.WriteLine("{0,-8} {1,-25} {2,-10} {3,-10} {4,-15} {5,-15} {6,-10:N0}",
+						numeroPago[i], fecha[i] + " " + hora[i], cedula[i], nombre[i], apellido1[i], apellido2[i], montoPagar[i]);
+						montototal += montoPagar[i];
+					}
+
+				}
+
+				// Totales
+				Console.WriteLine(new string('-', 105));
+				Console.WriteLine("{0,-33} {1,15}", "Total de Registros", contador);
+				Console.WriteLine("{0,-33} {1,15:N0}", "Monto Total", montototal);
+				Console.WriteLine("");
+				Console.WriteLine("");
+
+				break;
+
+
+			case 2:
+				Console.WriteLine("{0,-8} {1,-25} {2,-10} {3,-10} {4,-15} {5,-15} {6,-10}",
+				"# Pago", "Fecha/Hora Pago", "Cedula", "Nombre", "Apellido1", "Apellido2", "Monto Recibido");
+				Console.WriteLine(new string('=', 105)); // Línea de separación
+				byte contador2 = 0;
+				decimal montototal2 = 0;
+				// Datos
+				for (int i = 0; i < numeroPago.Length; i++)
+				{
+					if (numeroPago[i] != -1 && tipoServicio[i] == tipo_s)
+					{
+						contador2++;
+						Console.WriteLine("{0,-8} {1,-25} {2,-10} {3,-10} {4,-15} {5,-15} {6,-10:N0}",
+						numeroPago[i], fecha[i] + " " + hora[i], cedula[i], nombre[i], apellido1[i], apellido2[i], montoPagar[i]);
+						montototal2 += montoPagar[i];
+					}
+
+				}
+
+				// Totales
+				Console.WriteLine(new string('-', 105));
+				Console.WriteLine("{0,-33} {1,15}", "Total de Registros", contador2);
+				Console.WriteLine("{0,-33} {1,15:N0}", "Monto Total", montototal2);
+				Console.WriteLine("");
+				Console.WriteLine("");
+				break;
+
+			case 3:
+
+				Console.WriteLine("{0,-8} {1,-25} {2,-10} {3,-10} {4,-15} {5,-15} {6,-10}",
+				"# Pago", "Fecha/Hora Pago", "Cedula", "Nombre", "Apellido1", "Apellido2", "Monto Recibido");
+				Console.WriteLine(new string('=', 105)); // Línea de separación
+				byte contador3 = 0;
+				decimal montototal3 = 0;
+				// Datos
+				for (int i = 0; i < numeroPago.Length; i++)
+				{
+					if (numeroPago[i] != -1 && numeroCaja[i] == n_Caja)
+					{
+						contador3++;
+						Console.WriteLine("{0,-8} {1,-25} {2,-10} {3,-10} {4,-15} {5,-15} {6,-10:N0}",
+						numeroPago[i], fecha[i] + " " + hora[i], cedula[i], nombre[i], apellido1[i], apellido2[i], montoPagar[i]);
+						montototal3 += montoPagar[i];
+					}
+
+				}
+
+				// Totales
+				Console.WriteLine(new string('-', 105));
+				Console.WriteLine("{0,-33} {1,15}", "Total de Registros", contador3);
+				Console.WriteLine("{0,-33} {1,15:N0}", "Monto Total", montototal3);
+				Console.WriteLine("");
+				Console.WriteLine("");
+
+				break;
+
+		}
+	}
+
 	private static bool ValidarEsNumero(out int resultado)
 	{
 		string dato = Console.ReadLine();
