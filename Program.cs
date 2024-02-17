@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq.Expressions;
+using System.Numerics;
 using System.Text.RegularExpressions;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -28,7 +29,7 @@ internal class Program
 
 		InicializarVectores(numeroPago, fecha, hora, cedula, nombre, apellido1, apellido2,
 							 numeroCaja, tipoServicio, numeroFactura, montoPagar, montoComision,
-							 montoDeducido, montoPagaCliente, vuelto);
+							 montoDeducido, montoPagaCliente, vuelto,1,0);
 
 		Limpiar();
 		int opcion;
@@ -45,7 +46,7 @@ internal class Program
 					case 1:
 						InicializarVectores(numeroPago, fecha, hora, cedula, nombre, apellido1, apellido2,
 							 numeroCaja, tipoServicio, numeroFactura, montoPagar, montoComision,
-							 montoDeducido, montoPagaCliente, vuelto);
+							 montoDeducido, montoPagaCliente, vuelto,1,0);
 						break;
 					case 2:
 						RealizarPagos(numeroPago, fecha, hora, cedula, nombre, apellido1, apellido2,
@@ -64,7 +65,9 @@ internal class Program
 							 montoDeducido, montoPagaCliente, vuelto);
 						break;
 					case 5:
-						//EliminarPagos();
+						EliminarPagos(numeroPago, fecha, hora, cedula, nombre, apellido1, apellido2,
+							 numeroCaja, tipoServicio, numeroFactura, montoPagar, montoComision,
+							 montoDeducido, montoPagaCliente, vuelto);
 						break;
 					case 6:
 						SubmenuReportes();
@@ -175,8 +178,11 @@ internal class Program
 									string[] apellido2, int[] numeroCaja, int[] tipoServicio,
 									string[] numeroFactura, decimal[] montoPagar,
 									decimal[] montoComision, decimal[] montoDeducido,
-									decimal[] montoPagaCliente, decimal[] vuelto)
+									decimal[] montoPagaCliente, decimal[] vuelto, int modo, int indice)
 	{
+		if(modo == 1)
+		{
+
 		for (int i = 0; i < numeroPago.Length; i++)
 		{
 			numeroPago[i] = -1;
@@ -198,6 +204,26 @@ internal class Program
 		Limpiar();
 		Console.WriteLine("");
 		Console.WriteLine("Vectores inicializados correctamente.");
+
+		}else if(modo == 2)
+		{
+			numeroPago[indice] = -1;
+			fecha[indice] = "inz";
+			hora[indice] = "inz";
+			cedula[indice] = "inz";
+			nombre[indice] = "inz";
+			apellido1[indice] = "inz";
+			apellido2[indice] = "inz";
+			numeroCaja[indice] = -1;
+			tipoServicio[indice] = -1;
+			numeroFactura[indice] = "inz";
+			montoPagar[indice] = -1.00m;
+			montoComision[indice] = -1.00m;
+			montoDeducido[indice] = -1.00m;
+			montoPagaCliente[indice] = -1.00m;
+			vuelto[indice] = -1.00m;
+		}
+
 
 	}
 
@@ -906,6 +932,109 @@ internal class Program
 
 	}
 
+
+	private static void EliminarPagos(int[] numeroPago, string[] fecha, string[] hora,
+									string[] cedula, string[] nombre, string[] apellido1,
+									string[] apellido2, int[] numeroCaja, int[] tipoServicio,
+									string[] numeroFactura, decimal[] montoPagar,
+									decimal[] montoComision, decimal[] montoDeducido,
+									decimal[] montoPagaCliente, decimal[] vuelto)
+	{
+
+		Limpiar();
+		Console.WriteLine("");
+		Console.WriteLine("Sistema de Pago de Servicios Publicos");
+		Console.WriteLine("Eliminación de datos");
+		Console.WriteLine("");
+		Console.WriteLine("");
+		Console.Write("Numero de Pago: ");
+		int entrada;
+		while (!ValidarEsNumero(out entrada))
+		{
+			Limpiar();
+			Console.WriteLine("Por favor ingresa un número.");
+			Console.WriteLine("");
+			Console.WriteLine("Sistema de Pago de Servicios Publicos");
+			Console.WriteLine("Eliminación de datos");
+			Console.WriteLine("");
+			Console.WriteLine("");
+			Console.Write("Numero de Pago: ");
+		}
+		bool encontrado = false;
+		bool YoN = false;
+		Console.WriteLine("");
+		Console.WriteLine("");
+		Console.WriteLine("");
+
+		for (int i = 0; i < numeroPago.Length; i++)
+		{
+			if (numeroPago[i] == entrada)
+			{
+				encontrado = true;
+
+					Console.WriteLine("Dato Encontrado Posición Vector " + i);
+					Console.WriteLine("");
+					Console.WriteLine("");
+					Console.WriteLine("");
+					Console.WriteLine("");
+					Console.WriteLine("Presione cualquier tecla para ver registro...");
+					Console.ReadKey();
+					MotrarInfo(numeroPago, fecha, hora, cedula, nombre, apellido1, apellido2,
+							 numeroCaja, tipoServicio, numeroFactura, montoPagar, montoComision,
+							 montoDeducido, montoPagaCliente, vuelto, i, "Eliminación de datos", 1);
+					Console.WriteLine("");
+				do
+					{
+
+						Console.Write("Esta seguro de eliminar el dato S/N ?: ");
+						string entrada2 = Console.ReadLine();
+
+						if (entrada2 == "S" || entrada2 == "s")
+						{
+							YoN = true;
+							break;
+						}
+						else if (entrada2 == "N" || entrada2 == "n")
+						{
+							YoN = false;
+							Limpiar();
+							break;
+
+						}
+						else
+						{
+							Limpiar();
+							Console.WriteLine("Entrada inválida. Por favor, ingrese 'S' o 'N'.");
+							Console.WriteLine("");
+							MotrarInfo(numeroPago, fecha, hora, cedula, nombre, apellido1, apellido2,
+							numeroCaja, tipoServicio, numeroFactura, montoPagar, montoComision,
+							 montoDeducido, montoPagaCliente, vuelto, i, "Eliminación de datos", 1);
+							Console.WriteLine("");
+					}
+
+					} while (true);
+
+					if (YoN)
+					{
+					InicializarVectores(numeroPago, fecha, hora, cedula, nombre, apellido1, apellido2,
+						 numeroCaja, tipoServicio, numeroFactura, montoPagar, montoComision,
+						 montoDeducido, montoPagaCliente, vuelto, 2, i);
+					Limpiar();
+
+					}
+
+
+
+			}
+			else if (i == numeroPago.Length - 1 && encontrado == false)
+			{
+				Limpiar();
+				Console.WriteLine("Pago no se encuentra Registrado");
+			}
+
+		}
+
+	}
 	private static bool ValidarEsNumero(out int resultado)
 	{
 		string dato = Console.ReadLine();
@@ -998,7 +1127,16 @@ internal class Program
 	}
 	private static bool Contiene123(string numero)
 	{
-		return numero.Contains("1") || numero.Contains("2") || numero.Contains("3");
+		// Verifica que el string tenga exactamente un carácter
+		if (numero.Length == 1)
+		{
+			// Verifica si el carácter es '1', '2', o '3'
+			char caracter = numero[0];
+			return caracter == '1' || caracter == '2' || caracter == '3';
+		}
+
+		// Retorna false si el string no tiene exactamente un carácter
+		return false;
 	}
 	private static void Limpiar()
 	{
