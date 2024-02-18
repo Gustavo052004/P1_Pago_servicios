@@ -650,19 +650,20 @@ internal class Program
 								Console.WriteLine("Fecha");
                                 Console.WriteLine("");
                                 Console.Write("Digite la nueva fecha (dd/MM/yyyy): ");
-								fechaEntrada = Console.ReadLine();
+								fechaEntrada = Console.ReadLine().Trim();
 
 								// Verifica si la entrada es una fecha válida
 								fechaValida = EsFechaValida(fechaEntrada);
 
 								if (fechaValida)
-								{
+								{	Limpiar();
 									fecha[i] = fechaEntrada;
                                     Console.WriteLine("");
                                     Console.WriteLine("La fecha fue modificada.");
 								}
 								else
 								{
+									Limpiar();
                                     Console.WriteLine("");
                                     Console.WriteLine("La fecha no es válida. Asegúrese de usar el formato dd/MM/yyyy.");
 								}
@@ -682,18 +683,20 @@ internal class Program
 								Console.WriteLine("Hora");
 								Console.WriteLine("");
                                 Console.Write("Digite la nueva hora hh:mm tt( a. m. | p. m. ): ");
-								horaEntrada = Console.ReadLine();
+								horaEntrada = Console.ReadLine().Trim();
 
 								horaValida = EsHoraValida(horaEntrada);
 
 								if(horaValida)
 								{
+									Limpiar();
 									hora[i] = horaEntrada;
 									Console.WriteLine("");
 									Console.WriteLine("La hora fue modificada");
 								}
 								else
 								{
+									Limpiar();
 									Console.WriteLine("");
 									Console.WriteLine("La hora no es válida. Asegúrese de usar el formato (hh:mm tt).");
 								}
@@ -1042,6 +1045,9 @@ internal class Program
 		}
 
 	}
+
+
+
 
 
 
